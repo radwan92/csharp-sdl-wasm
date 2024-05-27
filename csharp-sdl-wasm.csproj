@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <RootNamespace />
+    </PropertyGroup>
+    
+    <Target Name="CopySDL2" AfterTargets="Build" Condition="'$(RuntimeIdentifier)' != 'browser-wasm'">
+        <Copy SourceFiles="deps/SDL2.dll" DestinationFolder="$(OutDir)" />
+    </Target>
+
+    <!-- WASM -->
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">
+        <OutputType>library</OutputType>
+        <DefineConstants>PLATFORM_WASM</DefineConstants>
+        <PublishTrimmed>true</PublishTrimmed>
+        <SelfContained>true</SelfContained>
+        <MSBuildEnableWorkloadResolver>false</MSBuildEnableWorkloadResolver>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">
+        <DirectPInvoke Include="SDL2" />
+        <LinkerArg Include="-s USE_SDL=2" />
+        <LinkerArg Include="-s EXPORTED_RUNTIME_METHODS=['ccall']" />
+    </ItemGroup>
+    
+    <ItemGroup Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">
+        <PackageReference Include="Microsoft.DotNet.ILCompiler.LLVM" Version="9.0.0-*" />
+        <PackageReference Include="runtime.win-x64.Microsoft.DotNet.ILCompiler.LLVM" Version="9.0.0-*" />
+    </ItemGroup>
+</Project>
